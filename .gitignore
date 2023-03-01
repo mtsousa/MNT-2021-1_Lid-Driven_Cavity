@@ -2,3 +2,5 @@ __pycache__/
 mnt_venv/
 *.zip
 *.npy
+*.pdf
+*.xlsx
