@@ -28,10 +28,11 @@ def calculate_u_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, u_star, U):
 
 @njit
 def calculate_u_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, u_star, U):
+    iteracao = 0
     error = 100
     while error > tol:
         R_max = 0
-        for i in range(1, Nx-1):
+        for i in range(1, Nx):
             for j in range(0, Ny):
                 C = (v[i, j+1] + v[i-1, j+1] + v[i, j] + v[i-1, j])/4
                 
@@ -52,6 +53,11 @@ def calculate_u_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, u_star, U):
                     R_max = abs(R)
 
         error = R_max
+
+        iteracao += 1
+        if iteracao > 10**6:
+            print('[ERRO] Atingiu o limite de iterações')
+            break
 
     # Update boundary conditions
     u_star[0, 0:Ny] = 0
@@ -83,11 +89,12 @@ def calculate_v_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, v_star):
 
 @njit
 def calculate_v_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, v_star):
+    iteracao = 0
     error = 100
     while error > tol:
         R_max = 0
         for i in range(0, Nx):
-            for j in range(1, Ny-1):
+            for j in range(1, Ny):
                 C = (u[i+1, j] + u[i, j] + u[i+1, j-1] + u[i, j-1])/4
                 
                 lamb = (1 + 3*dt/(Re*dx**2) + 2*dt/(Re*dy**2))**(-1)
@@ -108,6 +115,11 @@ def calculate_v_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, v_star):
 
         error = R_max
 
+        iteracao += 1
+        if iteracao > 10**6:
+            print('[ERRO] Atingiu o limite de iterações')
+            break
+
     # Update boundary conditions
     v_star[-1, 0:Ny+1] = -v_star[0, 0:Ny+1]
     v_star[Nx, 0:Ny+1] = -v_star[Nx-1, 0:Ny+1]
@@ -118,10 +130,9 @@ def calculate_v_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, v_star):
 
 @njit
 def calculate_pressure(u_star, v_star, Nx, Ny, dx, dy, dt, tol, pressure):
-    erro = 100
     iteracao = 0
-    erro_aux = erro
-    while erro > tol:
+    error = 100
+    while error > tol:
         R_max = 0
         for i in range(0, Nx):
             for j in range(0, Ny):
@@ -196,16 +207,11 @@ def calculate_pressure(u_star, v_star, Nx, Ny, dx, dy, dt, tol, pressure):
                 if np.abs(R) > R_max:
                     R_max = np.abs(R)
 
-        erro = R_max
+        error = R_max
         iteracao += 1
-        # print('iteracao', iteracao, 'erro', erro)
-        if iteracao > 10**9:
+        if iteracao > 10**6:
             print('[ERRO] Atingiu o limite de iterações')
             break
-        if (abs(erro - erro_aux) < tol) and iteracao > 50*10**3:
-            print('[AVISO] Saiu do loop com  erro igual a ', erro)
-            break
-        erro_aux = erro
         
     # Atualiza os ghost points da pressão
     pressure[0:Nx, -1] = pressure[0:Nx, 0]
@@ -241,9 +247,9 @@ def calculate_new_v(v_star, pressure, Nx, Ny, dy, dt, v):
 @njit
 def calculate_psi(u, v, Nx, Ny, dx, dy, dt, tol, psi):
     valor_lambda = -(2/dx**2 + 2/dy**2)
-    erro = 100
+    error = 100
     iteracao = 0
-    while erro > tol:
+    while error > tol:
         R_max = 0
         for i in range(1, Nx):
             for j in range(1, Ny):
@@ -258,9 +264,9 @@ def calculate_psi(u, v, Nx, Ny, dx, dy, dt, tol, psi):
                 if np.abs(R) > R_max:
                     R_max = np.abs(R)
 
-        erro = R_max
+        error = R_max
         iteracao += 1
-        if iteracao > 10**9:
+        if iteracao > 10**6:
             print('[ERRO] Atingiu o limite de iterações')
             break
     

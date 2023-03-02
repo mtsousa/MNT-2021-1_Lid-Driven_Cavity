@@ -51,7 +51,7 @@ def plot_psi_stream(u, v, Nx, Ny, Lx, Ly, output_path, mask=np.zeros((1, 1)), ob
     ax.set_xlim(0, Lx)
     ax.set_ylim(0, Ly)
     
-    plt.savefig('images/' + output_path + '.pdf', format='pdf')
+    plt.savefig('images/' + output_path + '_stream.pdf', format='pdf')
     plt.show()
 
 def plot_psi_contour(Nx, Ny, Lx, Ly, psi, output_path):
@@ -90,5 +90,5 @@ def plot_psi_contour(Nx, Ny, Lx, Ly, psi, output_path):
     ax.set_xlim(0, Lx)
     ax.set_ylim(0, Ly)
     
-    plt.savefig('images/' + output_path + '.pdf', format='pdf')
+    plt.savefig('images/' + output_path + '_contour.pdf', format='pdf')
     plt.show()

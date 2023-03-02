@@ -4,7 +4,8 @@
 Simulate a newtonian fluid flow over a lid-driven cavity
 """
 
-from utils.utils import *
+from utils.utils import calculate_u_star_exp, calculate_u_star_imp, calculate_v_star_exp, calculate_v_star_imp
+from utils.utils import calculate_pressure, calculate_new_u, calculate_new_v, calculate_psi, utils_compiler
 from utils.plot import plot_psi_contour, plot_psi_stream
 import numpy as np
 from tqdm import tqdm
@@ -98,6 +99,7 @@ if __name__ == '__main__':
                 u = calculate_new_u(u_star, pressure, Nx, Ny, dx, dt, u)
                 v = calculate_new_v(v_star, pressure, Nx, Ny, dy, dt, v)
 
+        tol = 1.e-8
         psi = calculate_psi(u, v, Nx, Ny, dx, dy, dt, tol, psi)
         print('psi_max:', -1*np.amin(psi))
 
