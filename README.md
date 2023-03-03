@@ -45,7 +45,7 @@ python validation.py --re 100 --tf 60
 python validation.py --re 100 --tf 60 --implicit --dt 0.005
 ```
 
-### Flow with obstacle
+### Flow for squared obstacle
 
 ## Results
 
@@ -53,18 +53,29 @@ python validation.py --re 100 --tf 60 --implicit --dt 0.005
 
 #### Maximum value of stream function
 
-Values obtained for dt = 0.005 and dx = dy = 0.01 in permanent situation.
+- dt = 0.001 and dx = dy = 0.01
 
-|  Re  | This work<sup>1</sup> | Kim and Moin (1985) | Ghia *et al.* (1982) | Marchi *et al.* (2009) |
-|:----:|:---------------------:|:-------------------:|:--------------------:|:----------------------:|
-|   1  |         0.0965        |        0.099        |           -          |   0.1001<sup>2</sup>   |
-|  100 |         0.1033        |        0.103        |         0.103        |         0.1035         |
-|  400 |         0.1125        |        0.112        |         0.114        |         0.1140         |
-| 1000 |         0.1148        |        0.116        |         0.118        |         0.1189         |
+|  Re  | This work<sup>1</sup> | This work<sup>2</sup> | Kim and Moin (1985) | Ghia *et al.* (1982) | Marchi *et al.* (2009) |
+|:----:|:---------------------:|:---------------------:|:-------------------:|:--------------------:|:----------------------:|
+|   1  |           -           |         0.0996        |        0.099        |           -          |   0.1001<sup>3</sup>   |
+|  100 |         0.1033        |         0.1033        |        0.103        |         0.103        |         0.1035         |
+|  400 |         0.1126        |         0.1126        |        0.112        |         0.114        |         0.1140         |
+| 1000 |         0.1149        |         0.1149        |        0.116        |         0.118        |         0.1189         |
 
-**1** - First order implicit method;
+**1** - First order explicit method;
 
-**2** - In this case *Re* number was 0.01.
+**2** - First order implicit method;
+
+**3** - In this case *Re* number was 0.01.
+
+- dt = 0.005 and dx = dy = 0.01
+
+|  Re  | This work<sup>2</sup> |
+|:----:|:---------------------:|
+|   1  |         0.0965        |
+|  100 |         0.1033        |
+|  400 |         0.1125        |
+| 1000 |         0.1148        |
 
 #### Stream function contour plot
 
@@ -76,7 +87,7 @@ Values obtained for dt = 0.005 and dx = dy = 0.01 in permanent situation.
 |             **Re = 1000**            |             **Re = 10000**            |
 | ![](images/implicit/Re_1000_imp.png) | ![](images/implicit/Re_10000_imp.png) |
 
-### Flow with squared obstacle
+### Flow for squared obstacle
 
 ## References
 
