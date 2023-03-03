@@ -45,7 +45,7 @@ python validation.py --re 100 --tf 60
 python validation.py --re 100 --tf 60 --implicit --dt 0.005
 ```
 
-### Flow for squared obstacle
+### Flow for a square obstacle
 
 ## Results
 
@@ -62,11 +62,7 @@ python validation.py --re 100 --tf 60 --implicit --dt 0.005
 |  400 |         0.1126        |         0.1126        |        0.112        |         0.114        |         0.1140         |
 | 1000 |         0.1149        |         0.1149        |        0.116        |         0.118        |         0.1189         |
 
-**1** - First order explicit method;
-
-**2** - First order implicit method;
-
-**3** - In this case *Re* number was 0.01.
+**1** - First order explicit method; **2** - First order implicit method; **3** - In this case *Re* number was 0.01.
 
 - dt = 0.005 and dx = dy = 0.01
 
@@ -87,8 +83,20 @@ python validation.py --re 100 --tf 60 --implicit --dt 0.005
 |             **Re = 1000**            |             **Re = 10000**            |
 | ![](images/implicit/Re_1000_imp.png) | ![](images/implicit/Re_10000_imp.png) |
 
-### Flow for squared obstacle
+### Flow for a square obstacle
 
-## References
+## Major references
 
-**[1]** - 
+**[1]** - Chorin, A.J., 1968. "Numerical solution of the Navier-Stokes equations". *Mathematics of computation*;
+
+**[2]** - Ghia, U., Ghia, K. and Shin, C., 1982. "High-Re solutions for incompressible flow using the Navier-Stokes equations and
+a multigrid method". *Journal of Computational Physics*;
+
+**[3]** - Kim, J. and Moin, P., 1985. "Application of a fractional-step method to incompressible Navier-Stokes equations". *Journal of Computational Physics*;
+
+**[4]** - Marchi, C.H., Suero, R. and Araki, L.K., 2009. "The lid-driven square cavity flow: Numerical solution with a 1024 x
+1024 grid". *Journal of the Brazilian Society of Mechanical Science and Engineering*;
+
+**[5]** - Shankar, P.N. and Deshpande, M.D., 2000. "Fluid Mechanics in the Driven Cavity". *Annual Review of Fluid Mechanics*;
+
+**[6]** - Rosa, A.P., 2021. "Roteiro para o Trabalho 5: Resolvendo o Problema do Escoamento de um Fluido em uma Cavidade com o Método de Projeção". Disciplina: Métodos Numéricos em Termofluidos, UnB.
