@@ -75,13 +75,23 @@ python validation.py --re 100 --tf 60 --implicit --dt 0.005
 
 #### Stream function contour plot
 
-|              **Re = 1**              |              **Re = 10**              |
+|              **Re = 1**              |             **Re = 100**              |
 |:------------------------------------:|:-------------------------------------:|
-|   ![](images/implicit/Re_1_imp.png)  |   ![](images/implicit/Re_10_imp.png)  |
-|             **Re = 100**             |              **Re = 400**             |
-|  ![](images/implicit/Re_100_imp.png) |  ![](images/implicit/Re_400_imp.png)  |
-|             **Re = 1000**            |             **Re = 10000**            |
-| ![](images/implicit/Re_1000_imp.png) | ![](images/implicit/Re_10000_imp.png) |
+|   ![](images/implicit/Re_1_imp.png)  |  ![](images/implicit/Re_100_imp.png)  |
+|             **Re = 400**             |             **Re = 1000**             |
+|  ![](images/implicit/Re_400_imp.png) | ![](images/implicit/Re_1000_imp.png)  |
+
+#### Velocity *u* profile for x = 0.5
+
+|           **Re = 100**           |           **Re = 1000**           |
+|:--------------------------------:|:---------------------------------:|
+| ![](images/Re100_u_velocity.png) | ![](images/Re1000_u_velocity.png) |
+
+#### Vorticity contour plot
+
+|           **Re = 100**          |           **Re = 1000**          |
+|:-------------------------------:|:--------------------------------:|
+| ![](images/Re100_vorticity.png) | ![](images/Re1000_vorticity.png) |
 
 ### Flow for a square obstacle
 

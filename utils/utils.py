@@ -313,3 +313,16 @@ def utils_compiler():
 def max_psi(dir):
     psi = np.load('data/' + str(dir) + '/stream.npy')
     print('psi_max:', -1*np.amin(psi))
+
+def calculate_voticity(dir, dx, dy, Nx, Ny):
+    u = np.load('data/' + str(dir) + '/u.npy')
+    v = np.load('data/' + str(dir) + '/v.npy')
+    
+    w = np.zeros((Nx+1, Ny+1), float)
+
+    for i in range(1, Nx):
+        for j in range(1, Ny):
+            w[i, j] = (v[i+1, j] - v[i-1, j])/(2*dx) - (u[i, j+1] - u[i, j-1])/(2*dy)
+
+    np.save('data/' + str(dir) + '/vorticity.npy', w)
+    return w
