@@ -6,45 +6,26 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.patches as patches
 
-def plot_psi_stream(u, v, Nx, Ny, Lx, Ly, output_path, mask=np.zeros((1, 1)), obs=False):
-    
-    u_plot = np.zeros((Nx+1, Ny+1), float)
-    v_plot = np.zeros((Nx+1, Ny+1), float)
-
-    u_plot_unt = np.copy(u_plot)
-    v_plot_unt = np.copy(v_plot)
-
-    # Calcula as matrizes para os gráficos
-    for i in range(0, Nx+1):
-        for j in range(0, Ny+1):
-            u_plot[i, j] = (u[i, j] + u[i, j-1])/2
-            v_plot[i, j] = (v[i, j] + v[i-1, j])/2
-            
-            norm = (u_plot[i, j]**2 + v_plot[i, j]**2)**0.5
-            
-            if norm != 0:
-                u_plot_unt[i, j] = u_plot[i, j]/norm
-                v_plot_unt[i, j] = v_plot[i, j]/norm
-
-    x = np.linspace(0, Lx, Nx+1)
-    y = np.linspace(0, Ly, Ny+1)
+def plot_psi_stream(u_plot, v_plot, x, y, Nx, Lx, Ly, output_path, obs_i, obs_j, L, obs=False):
     
     fig, ax = plt.subplots(1, 1, figsize=(4, 4),
                             constrained_layout=True,
                             sharex=True, sharey=True)
 
-    aux_u = np.copy(u_plot)
-    if obs:
-        aux_u = np.ma.array(aux_u, mask=mask)
-    
     # output_path dos eixos
     ax.set_xlabel('x', fontsize=16)
     ax.set_ylabel('y', fontsize=16)
     
-    ax.streamplot(x, y, np.transpose(aux_u), np.transpose(v_plot), color='k', density=2.0)
+    ax.streamplot(x, y, np.transpose(u_plot), np.transpose(v_plot), color='k', density=2.0)
     if obs:
-        ax.imshow(~mask, cmap='gray', alpha=1, extent=(0, 1, 0, 1))
+        ax.add_patch(
+                    patches.Rectangle(
+                        xy=(obs_i/Nx, obs_j/Nx),  # point of origin.
+                        width=L/Nx, height=L/Nx, linewidth=1,
+                        color='black', fill=True))
+    
     ax.set_aspect('equal')
     
     # redimensiona os eixos
@@ -54,7 +35,7 @@ def plot_psi_stream(u, v, Nx, Ny, Lx, Ly, output_path, mask=np.zeros((1, 1)), ob
     plt.savefig('images/' + output_path + '_stream.pdf', format='pdf')
     plt.show()
 
-def plot_psi_contour(Nx, Ny, Lx, Ly, psi, output_path):
+def plot_psi_contour(Nx, x, y, Lx, Ly, psi, output_path, obs_i, obs_j, L, obs=False):
     
     aux_min = psi[psi[:, :] < 0.0]
     aux_max = psi[psi[:, :] > 0.0]
@@ -71,8 +52,8 @@ def plot_psi_contour(Nx, Ny, Lx, Ly, psi, output_path):
     psi = -1*psi
     # print('psi_max:', np.amax(psi))
 
-    x = np.linspace(0, Lx, Nx+1)
-    y = np.linspace(0, Ly, Ny+1)
+    # x = np.linspace(0, Lx, Nx+1)
+    # y = np.linspace(0, Ly, Ny+1)
     
     fig, ax = plt.subplots(1, 1, figsize=(4, 4),
     constrained_layout=True,
@@ -82,9 +63,16 @@ def plot_psi_contour(Nx, Ny, Lx, Ly, psi, output_path):
     ax.set_xlabel('x', fontsize=16)
     ax.set_ylabel('y', fontsize=16)
     
-    ax.contour(x, y, np.transpose(psi), levels, colors='k', linewidths=1.0)
+    ax.contour(x, y, np.transpose(psi), levels, colors='k', linewidths=1.0, zorder=4.0)
+    if obs:
+        ax.add_patch(
+                    patches.Rectangle(
+                        xy=(obs_i/Nx, obs_j/Nx),  # point of origin.
+                        width=L/Nx, height=L/Nx, linewidth=1,
+                        color='black', fill=True, zorder=3.0))
+
     ax.set_aspect('equal')
-    ax.grid(True)
+    ax.grid(True, zorder=0.0)
     
     # redimensiona os eixos
     ax.set_xlim(0, Lx)
@@ -133,16 +121,20 @@ def plot_u_velocity(dir, Re, Lx, Ly, Nx, Ny):
     plt.savefig(f'images/Re{Re}_u_velocity.pdf', format='pdf')
     plt.show()
 
-def plot_vorticity_contour(w, Nx, Ny, Lx, Ly, Re):
+def plot_vorticity_contour(w, Nx, Ny, Lx, Ly, Re, output_path, obs_i, obs_j, L, obs=False):
     
     aux_min = w[w[:, :] < 0.0]
     aux_max = w[w[:, :] > 0.0]
     amax = np.linspace(np.amin(aux_max), np.amax(aux_max), 200)
     amin = np.linspace(np.amin(aux_min), np.amax(aux_min), 200)
-    if Re == 100:
+    if Re == 1:
+        levels = np.concatenate(([amin[k] for k in [180, 184, 188, 192, 196, 198]], [amax[k] for k in range(0, 200, 15)]), axis=0)
+    elif Re == 100:
         levels = np.concatenate(([amin[k] for k in range(187, 200, 2)], [amax[k] for k in range(3, 20, 3)]), axis=0)
-    elif Re == 1000:
+    elif Re == 400 or Re == 1000:
         levels = np.concatenate(([amin[k] for k in range(180, 200, 3)], [amax[k] for k in [0, 1, 3, 4, 6, 7, 8, 9, 11]]), axis=0)
+    else:
+        levels = np.concatenate(([amin[k] for k in range(0, 200, 20)], [amax[k] for k in range(0, 200, 20)]), axis=0)
     levels[:] = -1*levels[:]
     aux = np.zeros(levels.shape)
     for j, i in enumerate(levels):
@@ -164,13 +156,60 @@ def plot_vorticity_contour(w, Nx, Ny, Lx, Ly, Re):
     ax.set_xlabel('x', fontsize=16)
     ax.set_ylabel('y', fontsize=16)
     
-    ax.contour(x, y, np.transpose(w), levels, colors='k', linewidths=1.0)
+    ax.contour(x, y, np.transpose(w), levels, colors='k', linewidths=1.0, zorder=4.0)
+    if obs:
+        ax.add_patch(
+                    patches.Rectangle(
+                        xy=(obs_i/Nx, obs_j/Nx),  # point of origin.
+                        width=L/Nx, height=L/Nx, linewidth=1,
+                        color='black', fill=True, zorder=3.0))
+    
     ax.set_aspect('equal')
-    ax.grid(True)
+    ax.grid(True, zorder=0.0)
     
     # redimensiona os eixos
     ax.set_xlim(0, Lx)
     ax.set_ylim(0, Ly)
     
-    plt.savefig(f'images/Re{Re}_vorticity.pdf', format='pdf')
+    plt.savefig(f'images/' + output_path + '_vorticity.pdf', format='pdf')
     plt.show()
+
+def get_vectors_plot(u, v, Nx, Ny, Lx, Ly):
+    
+    u_plot = np.zeros((Nx+1, Ny+1), float)
+    v_plot = np.zeros((Nx+1, Ny+1), float)
+
+    # Calcula as matrizes para os gráficos
+    for i in range(0, Nx+1):
+        for j in range(0, Ny+1):
+            u_plot[i, j] = (u[i, j] + u[i, j-1])/2
+            v_plot[i, j] = (v[i, j] + v[i-1, j])/2
+
+    x = np.linspace(0, Lx, Nx+1)
+    y = np.linspace(0, Ly, Ny+1)
+
+    return u_plot, v_plot, x, y
+
+# Re = 1000
+# Nx, Ny = 100, 100
+# Lx, Ly = 1, 1
+# obs_i, obs_j, L = 40, 40, 20
+# obs = True
+
+# output_path = f'Re_{str(Re)}_obs'
+# u = np.load('data/' + output_path + '/u.npy')
+# v = np.load('data/' + output_path + '/v.npy')
+# # psi = np.load('data/' + output_path + '/stream.npy')
+# # pressure = np.load('data/' + output_path + '/pressure.npy')
+# w = np.load('data/' + output_path + '/vorticity.npy')
+
+# u_plot, v_plot, x, y = get_vectors_plot(u, v, Nx, Ny, Lx, Ly)
+
+# # Plot stream function contour
+# # plot_psi_contour(Nx, x, y, Lx, Ly, psi, output_path, obs_i, obs_j, L, obs)
+
+# # Plot streamlines
+# # plot_psi_stream(u_plot, v_plot, x, y, Nx, Lx, Ly, output_path, obs_i, obs_j, L, obs)
+
+# # Plot vorticity contour
+# # plot_vorticity_contour(w, Nx, Ny, Lx, Ly, Re, output_path, obs_i, obs_j, L, obs)

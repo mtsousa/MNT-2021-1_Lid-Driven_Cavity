@@ -36,13 +36,13 @@ pip install -r requirements.txt
 - Explicit method
 
 ```bash
-python validation.py --re 100 --tf 60
+python main.py --re 100 --tf 60 --validation
 ```
 
 - Implicit method
 
 ```bash
-python validation.py --re 100 --tf 60 --implicit --dt 0.005
+python main.py --re 100 --tf 60 --implicit --dt 0.005 --validation
 ```
 
 ### Flow for a square obstacle
