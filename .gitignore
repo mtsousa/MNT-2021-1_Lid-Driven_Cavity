@@ -4,3 +4,4 @@ mnt_venv/
 *.npy
 *.pdf
 *.xlsx
+scheduler.*
