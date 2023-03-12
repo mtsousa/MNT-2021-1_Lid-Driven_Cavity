@@ -1,14 +1,14 @@
-# Autor: Matheus Teixeira de Sousa
-# Disciplina: Métodos Numéricos em Termofluidos, Trabalho Final
-#
-# 
-# Arquivo com as funções desenvolvidas para gerar os gráficos do escoamento
+"""
+@Author: Matheus Teixeira de Sousa (mtsousa14@gmail.com)
+
+Implement the functions to plot the pressure, velocity and vorticity
+"""
 
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as patches
 
-def plot_psi_stream(u_plot, v_plot, x, y, Nx, Lx, Ly, output_path, obs_i, obs_j, L, obs=False):
+def plot_psi_stream(u_plot, v_plot, x, y, Nx, Lx, Ly, output_path, obs_i, obs_j, L, obs=False, dont_show=False, dont_save=False):
     
     fig, ax = plt.subplots(1, 1, figsize=(4, 4),
                             constrained_layout=True,
@@ -20,11 +20,12 @@ def plot_psi_stream(u_plot, v_plot, x, y, Nx, Lx, Ly, output_path, obs_i, obs_j,
     
     ax.streamplot(x, y, np.transpose(u_plot), np.transpose(v_plot), color='k', density=2.0)
     if obs:
-        ax.add_patch(
-                    patches.Rectangle(
-                        xy=(obs_i/Nx, obs_j/Nx),  # point of origin.
-                        width=L/Nx, height=L/Nx, linewidth=1,
-                        color='black', fill=True))
+        for i, j, k in zip(obs_i, obs_j, L):
+            ax.add_patch(
+                        patches.Rectangle(
+                            xy=(i/Nx, j/Nx),  # point of origin.
+                            width=k/Nx, height=k/Nx, linewidth=1,
+                            color='black', fill=True, zorder=3.0))
     
     ax.set_aspect('equal')
     
@@ -32,10 +33,13 @@ def plot_psi_stream(u_plot, v_plot, x, y, Nx, Lx, Ly, output_path, obs_i, obs_j,
     ax.set_xlim(0, Lx)
     ax.set_ylim(0, Ly)
     
-    plt.savefig('images/' + output_path + '_stream.pdf', format='pdf')
-    plt.show()
+    if not dont_save:
+        plt.savefig('images/' + output_path + '_stream.pdf', format='pdf')
+    
+    if not dont_show:
+        plt.show()
 
-def plot_psi_contour(Nx, x, y, Lx, Ly, psi, output_path, obs_i, obs_j, L, obs=False):
+def plot_psi_contour(Nx, x, y, Lx, Ly, psi, output_path, obs_i, obs_j, L, obs=False, dont_show=False, dont_save=False):
     
     aux_min = psi[psi[:, :] < 0.0]
     aux_max = psi[psi[:, :] > 0.0]
@@ -65,11 +69,12 @@ def plot_psi_contour(Nx, x, y, Lx, Ly, psi, output_path, obs_i, obs_j, L, obs=Fa
     
     ax.contour(x, y, np.transpose(psi), levels, colors='k', linewidths=1.0, zorder=4.0)
     if obs:
-        ax.add_patch(
-                    patches.Rectangle(
-                        xy=(obs_i/Nx, obs_j/Nx),  # point of origin.
-                        width=L/Nx, height=L/Nx, linewidth=1,
-                        color='black', fill=True, zorder=3.0))
+        for i, j, k in zip(obs_i, obs_j, L):
+            ax.add_patch(
+                        patches.Rectangle(
+                            xy=(i/Nx, j/Nx),  # point of origin.
+                            width=k/Nx, height=k/Nx, linewidth=1,
+                            color='black', fill=True, zorder=3.0))
 
     ax.set_aspect('equal')
     ax.grid(True, zorder=0.0)
@@ -78,8 +83,11 @@ def plot_psi_contour(Nx, x, y, Lx, Ly, psi, output_path, obs_i, obs_j, L, obs=Fa
     ax.set_xlim(0, Lx)
     ax.set_ylim(0, Ly)
     
-    plt.savefig('images/' + output_path + '_contour.pdf', format='pdf')
-    plt.show()
+    if not dont_save:
+        plt.savefig('images/' + output_path + '_contour.pdf', format='pdf')
+    
+    if not dont_show:
+        plt.show()
 
 def plot_pressure_contour():
     pass
@@ -121,7 +129,7 @@ def plot_u_velocity(dir, Re, Lx, Ly, Nx, Ny):
     plt.savefig(f'images/Re{Re}_u_velocity.pdf', format='pdf')
     plt.show()
 
-def plot_vorticity_contour(w, Nx, Ny, Lx, Ly, Re, output_path, obs_i, obs_j, L, obs=False):
+def plot_vorticity_contour(w, Nx, Ny, Lx, Ly, Re, output_path, obs_i, obs_j, L, obs=False, dont_show=False, dont_save=False):
     
     aux_min = w[w[:, :] < 0.0]
     aux_max = w[w[:, :] > 0.0]
@@ -158,11 +166,12 @@ def plot_vorticity_contour(w, Nx, Ny, Lx, Ly, Re, output_path, obs_i, obs_j, L, 
     
     ax.contour(x, y, np.transpose(w), levels, colors='k', linewidths=1.0, zorder=4.0)
     if obs:
-        ax.add_patch(
-                    patches.Rectangle(
-                        xy=(obs_i/Nx, obs_j/Nx),  # point of origin.
-                        width=L/Nx, height=L/Nx, linewidth=1,
-                        color='black', fill=True, zorder=3.0))
+        for i, j, k in zip(obs_i, obs_j, L):
+            ax.add_patch(
+                        patches.Rectangle(
+                            xy=(i/Nx, j/Nx),  # point of origin.
+                            width=k/Nx, height=k/Nx, linewidth=1,
+                            color='black', fill=True, zorder=3.0))
     
     ax.set_aspect('equal')
     ax.grid(True, zorder=0.0)
@@ -171,8 +180,11 @@ def plot_vorticity_contour(w, Nx, Ny, Lx, Ly, Re, output_path, obs_i, obs_j, L, 
     ax.set_xlim(0, Lx)
     ax.set_ylim(0, Ly)
     
-    plt.savefig(f'images/' + output_path + '_vorticity.pdf', format='pdf')
-    plt.show()
+    if not dont_save:
+        plt.savefig(f'images/' + output_path + '_vorticity.pdf', format='pdf')
+    
+    if not dont_show:
+        plt.show()
 
 def get_vectors_plot(u, v, Nx, Ny, Lx, Ly):
     
@@ -190,16 +202,16 @@ def get_vectors_plot(u, v, Nx, Ny, Lx, Ly):
 
     return u_plot, v_plot, x, y
 
-# Re = 1000
+# Re = 400
 # Nx, Ny = 100, 100
 # Lx, Ly = 1, 1
-# obs_i, obs_j, L = 40, 40, 20
+# obs_i, obs_j, L = [20], [60], [20]
 # obs = True
 
-# output_path = f'Re_{str(Re)}_obs'
+# output_path = f'Re{str(Re)}_a'
 # u = np.load('data/' + output_path + '/u.npy')
 # v = np.load('data/' + output_path + '/v.npy')
-# # psi = np.load('data/' + output_path + '/stream.npy')
+# psi = np.load('data/' + output_path + '/stream.npy')
 # # pressure = np.load('data/' + output_path + '/pressure.npy')
 # w = np.load('data/' + output_path + '/vorticity.npy')
 
@@ -209,7 +221,7 @@ def get_vectors_plot(u, v, Nx, Ny, Lx, Ly):
 # # plot_psi_contour(Nx, x, y, Lx, Ly, psi, output_path, obs_i, obs_j, L, obs)
 
 # # Plot streamlines
-# # plot_psi_stream(u_plot, v_plot, x, y, Nx, Lx, Ly, output_path, obs_i, obs_j, L, obs)
+# plot_psi_stream(u_plot, v_plot, x, y, Nx, Lx, Ly, output_path, obs_i, obs_j, L, obs)
 
 # # Plot vorticity contour
 # # plot_vorticity_contour(w, Nx, Ny, Lx, Ly, Re, output_path, obs_i, obs_j, L, obs)

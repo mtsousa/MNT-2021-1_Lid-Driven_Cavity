@@ -8,10 +8,13 @@ import numpy as np
 from numba import njit
 
 @njit
-def calculate_u_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, u_star, U, obs_i=0, obs_j=0, L=1, obs=False):
+def calculate_u_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, u_star, U, obs_i: np.ndarray, obs_j: np.ndarray, L: np.ndarray, inside_obs: np.ndarray, obs=False):
     for i in range(1, Nx):
         for j in range(0, Ny):
-            if not ((i > obs_i and i < obs_i+L) and (j > obs_j and j < obs_j+L)) or not obs:
+            for k in range(len(obs_i)):
+                inside_obs[k] = ((i > obs_i[k] and i < obs_i[k]+L[k]) and (j > obs_j[k] and j < obs_j[k]+L[k]))
+
+            if not inside_obs.any() or not obs:
                 C = (v[i, j+1] + v[i-1, j+1] + v[i, j] + v[i-1, j])/4
                 aux_convectivo = -dt*(u[i, j]*(u[i+1, j] - u[i-1, j])/(2*dx) +
                                     C*(u[i, j+1] - u[i, j-1])/(2*dy))
@@ -26,25 +29,29 @@ def calculate_u_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, u_star, U, obs_i=0, obs_j
     u_star[0:Nx+1, Ny] = 2*U[0:Nx+1] - u_star[0:Nx+1, Ny-1]
 
     if obs:
-        # Atualiza os ghost points do obstáculo
-        u_star[obs_i, obs_j:obs_j+L] = 0
-        u_star[obs_i+L, obs_j:obs_j+L] = 0
-        ## Na borda, a média tem que ser igual a zero
-        ## Então parte de dentro igual - o valor da borda para todas as linhas
-        u_star[obs_i+1:obs_i+L, obs_j+1] = -u_star[obs_i+1:obs_i+L, obs_j] # Igual ao da parede da direita
-        u_star[obs_i+1:obs_i+L, obs_j+L-1] = -u_star[obs_i+1:obs_i+L, obs_j+L] # Igual ao da parede da esquerda
+        for i, j, k in zip(obs_i, obs_j, L):
+            # Atualiza os ghost points do obstáculo
+            u_star[i, j:j+k] = 0
+            u_star[i+k, j:j+k] = 0
+            ## Na borda, a média tem que ser igual a zero
+            ## Então parte de dentro igual - o valor da borda para todas as linhas
+            u_star[i+1:i+k, j+1] = -u_star[i+1:i+k, j] # Igual ao da parede da direita
+            u_star[i+1:i+k, j+k-1] = -u_star[i+1:i+k, j+k] # Igual ao da parede da esquerda
 
     return u_star
 
 @njit
-def calculate_u_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, u_star, U, obs_i=0, obs_j=0, L=1, obs=False):
+def calculate_u_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, u_star, U, obs_i: np.ndarray, obs_j: np.ndarray, L: np.ndarray, inside_obs: np.ndarray, obs=False):
     iteracao = 0
     error = 100
     while error > tol:
         R_max = 0
         for i in range(1, Nx):
             for j in range(0, Ny):
-                if not ((i > obs_i and i < obs_i+L) and (j > obs_j and j < obs_j+L)) or not obs:
+                for k in range(len(obs_i)):
+                    inside_obs[k] = ((i > obs_i[k] and i < obs_i[k]+L[k]) and (j > obs_j[k] and j < obs_j[k]+L[k]))
+
+                if not inside_obs.any() or not obs:
                     C = (v[i, j+1] + v[i-1, j+1] + v[i, j] + v[i-1, j])/4
                     
                     lamb = (1 + 2*dt/(Re*dx**2) + 3*dt/(Re*dy**2))**(-1)
@@ -67,7 +74,7 @@ def calculate_u_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, u_star, U, obs_i=0, 
 
         iteracao += 1
         if iteracao > 10**6:
-            print('[ERRO] Atingiu o limite de iterações')
+            print('[ERROR] - Maximum number of iterations reached.')
             break
 
     # Update boundary conditions
@@ -77,21 +84,25 @@ def calculate_u_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, u_star, U, obs_i=0, 
     u_star[0:Nx+1, Ny] = 2*U[0:Nx+1] - u_star[0:Nx+1, Ny-1]
 
     if obs:
-        # Atualiza os ghost points do obstáculo
-        u_star[obs_i, obs_j:obs_j+L] = 0
-        u_star[obs_i+L, obs_j:obs_j+L] = 0
-        ## Na borda, a média tem que ser igual a zero
-        ## Então parte de dentro igual - o valor da borda para todas as linhas
-        u_star[obs_i+1:obs_i+L, obs_j+1] = -u_star[obs_i+1:obs_i+L, obs_j] # Igual ao da parede da direita
-        u_star[obs_i+1:obs_i+L, obs_j+L-1] = -u_star[obs_i+1:obs_i+L, obs_j+L] # Igual ao da parede da esquerda
-
+        for i, j, k in zip(obs_i, obs_j, L):
+            # Atualiza os ghost points do obstáculo
+            u_star[i, j:j+k] = 0
+            u_star[i+k, j:j+k] = 0
+            ## Na borda, a média tem que ser igual a zero
+            ## Então parte de dentro igual - o valor da borda para todas as linhas
+            u_star[i+1:i+k, j+1] = -u_star[i+1:i+k, j] # Igual ao da parede da direita
+            u_star[i+1:i+k, j+k-1] = -u_star[i+1:i+k, j+k] # Igual ao da parede da esquerda
+    
     return u_star
 
 @njit
-def calculate_v_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, v_star, obs_i=0, obs_j=0, L=1, obs=False):
+def calculate_v_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, v_star, obs_i: np.ndarray, obs_j: np.ndarray, L: np.ndarray, inside_obs: np.ndarray, obs=False):
     for i in range(0, Nx):
         for j in range(1, Ny):
-            if not ((i > obs_i and i < obs_i+L) and (j > obs_j and j < obs_j+L)) or not obs:
+            for k in range(len(obs_i)):
+                inside_obs[k] = ((i > obs_i[k] and i < obs_i[k]+L[k]) and (j > obs_j[k] and j < obs_j[k]+L[k]))
+
+            if not inside_obs.any() or not obs:
                 # Percorrer todas as linhas, inclusive as bordas
                 C = (u[i+1, j] + u[i+1, j-1] + u[i, j] + u[i, j-1])/4
                 aux_convectivo = -dt*(C*(v[i+1, j] - v[i-1, j])/(2*dx) + 
@@ -107,25 +118,29 @@ def calculate_v_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, v_star, obs_i=0, obs_j=0,
     v_star[0:Nx, Ny] = 0
 
     if obs:
-        # Atualiza os ghost points do obstáculo
-        ## Na borda, a média tem que ser igual a zero
-        ## Então parte de dentro igual - o valor da borda para todas as colunas
-        v_star[obs_i+L-1, obs_j+1:obs_j+L] = -v_star[obs_i+L, obs_j+1:obs_j+L] # Igual ao da parte de cima
-        v_star[obs_i+1, obs_j+1:obs_j+L] = -v_star[obs_i, obs_j+1:obs_j+L] # Igual ao da parte de baixo
-        v_star[obs_i:obs_i+L, obs_j] = 0
-        v_star[obs_i:obs_i+L, obs_j+L] = 0 
+        for i, j, k in zip(obs_i, obs_j, L):
+            # Atualiza os ghost points do obstáculo
+            ## Na borda, a média tem que ser igual a zero
+            ## Então parte de dentro igual - o valor da borda para todas as colunas
+            v_star[i+k-1, j+1:j+k] = -v_star[i+k, j+1:j+k] # Igual ao da parte de cima
+            v_star[i+1, j+1:j+k] = -v_star[i, j+1:j+k] # Igual ao da parte de baixo
+            v_star[i:i+k, j] = 0
+            v_star[i:i+k, j+k] = 0 
     
     return v_star
 
 @njit
-def calculate_v_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, v_star, obs_i=0, obs_j=0, L=1, obs=False):
+def calculate_v_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, v_star, obs_i: np.ndarray, obs_j: np.ndarray, L: np.ndarray, inside_obs: np.ndarray, obs=False):
     iteracao = 0
     error = 100
     while error > tol:
         R_max = 0
         for i in range(0, Nx):
             for j in range(1, Ny):
-                if not ((i > obs_i and i < obs_i+L) and (j > obs_j and j < obs_j+L)) or not obs:
+                for k in range(len(obs_i)):
+                    inside_obs[k] = ((i > obs_i[k] and i < obs_i[k]+L[k]) and (j > obs_j[k] and j < obs_j[k]+L[k]))
+
+                if not inside_obs.any() or not obs:
                     C = (u[i+1, j] + u[i, j] + u[i+1, j-1] + u[i, j-1])/4
                     
                     lamb = (1 + 3*dt/(Re*dx**2) + 2*dt/(Re*dy**2))**(-1)
@@ -148,7 +163,7 @@ def calculate_v_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, v_star, obs_i=0, obs
 
         iteracao += 1
         if iteracao > 10**6:
-            print('[ERRO] Atingiu o limite de iterações')
+            print('[ERROR] - Maximum number of iterations reached.')
             break
 
     # Update boundary conditions
@@ -158,25 +173,29 @@ def calculate_v_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, v_star, obs_i=0, obs
     v_star[0:Nx, Ny] = 0
 
     if obs:
-        # Atualiza os ghost points do obstáculo
-        ## Na borda, a média tem que ser igual a zero
-        ## Então parte de dentro igual - o valor da borda para todas as colunas
-        v_star[obs_i+L-1, obs_j+1:obs_j+L] = -v_star[obs_i+L, obs_j+1:obs_j+L] # Igual ao da parte de cima
-        v_star[obs_i+1, obs_j+1:obs_j+L] = -v_star[obs_i, obs_j+1:obs_j+L] # Igual ao da parte de baixo
-        v_star[obs_i:obs_i+L, obs_j] = 0
-        v_star[obs_i:obs_i+L, obs_j+L] = 0 
+        for i, j, k in zip(obs_i, obs_j, L):
+            # Atualiza os ghost points do obstáculo
+            ## Na borda, a média tem que ser igual a zero
+            ## Então parte de dentro igual - o valor da borda para todas as colunas
+            v_star[i+k-1, j+1:j+k] = -v_star[i+k, j+1:j+k] # Igual ao da parte de cima
+            v_star[i+1, j+1:j+k] = -v_star[i, j+1:j+k] # Igual ao da parte de baixo
+            v_star[i:i+k, j] = 0
+            v_star[i:i+k, j+k] = 0
 
     return v_star
 
 @njit
-def calculate_pressure(u_star, v_star, Nx, Ny, dx, dy, dt, tol, pressure, obs_i=0, obs_j=0, L=1, obs=False):
+def calculate_pressure(u_star, v_star, Nx, Ny, dx, dy, dt, tol, pressure, obs_i: np.ndarray, obs_j: np.ndarray, L: np.ndarray, inside_obs: np.ndarray, obs=False):
     iteracao = 0
     error = 100
     while error > tol:
         R_max = 0
         for i in range(0, Nx):
             for j in range(0, Ny):
-                if not ((i > obs_i and i < obs_i+L) and (j > obs_j and j < obs_j+L)) or not obs:
+                for k in range(len(obs_i)):
+                    inside_obs[k] = ((i > obs_i[k] and i < obs_i[k]+L[k]) and (j > obs_j[k] and j < obs_j[k]+L[k]))
+
+                if not inside_obs.any() or not obs:
                     # Percorrer todas as linhas e colunas, inclusive as bordas
                     # Topo parede esquerda da cavidade ou da direita do objeto
                     if (i == 0 and j == 0):
@@ -251,7 +270,7 @@ def calculate_pressure(u_star, v_star, Nx, Ny, dx, dy, dt, tol, pressure, obs_i=
         error = R_max
         iteracao += 1
         if iteracao > 10**6:
-            print('[ERRO] Atingiu o limite de iterações')
+            print('[ERROR] - Maximum number of iterations reached.')
             break
         
     # Atualiza os ghost points da pressão
@@ -267,35 +286,42 @@ def calculate_pressure(u_star, v_star, Nx, Ny, dx, dy, dt, tol, pressure, obs_i=
     pressure[Nx, Ny] = pressure[Nx-1, Ny-1]
 
     if obs:
-        # Atualiza os ghost points do obstáculo
-        pressure[obs_i+1:obs_i+L, obs_i+1] = pressure[obs_i+1:obs_i+L, obs_j]
-        pressure[obs_i+1:obs_i+L, obs_j+L-1] = pressure[obs_i+1:obs_i+L, obs_j+L]
-        pressure[obs_i+L-1, obs_j+1:obs_j+L] = pressure[obs_i+L, obs_j+1:obs_j+L]
-        pressure[obs_i+1, obs_j+1:obs_j+L] = pressure[obs_i, obs_j+1:obs_j+L]
+        for i, j, k in zip(obs_i, obs_j, L):
+            # Atualiza os ghost points do obstáculo
+            pressure[i+1:i+k, i+1] = pressure[i+1:i+k, j]
+            pressure[i+1:i+k, j+k-1] = pressure[i+1:i+k, j+k]
+            pressure[i+k-1, j+1:j+k] = pressure[i+k, j+1:j+k]
+            pressure[i+1, j+1:j+k] = pressure[i, j+1:j+k]
 
     return pressure
 
 # Verificar as condições daqui para baixo
 @njit
-def calculate_new_u(u_star, pressure, Nx, Ny, dx, dt, u, obs_i=0, obs_j=0, L=1, obs=False):
+def calculate_new_u(u_star, pressure, Nx, Ny, dx, dt, u, obs_i: np.ndarray, obs_j: np.ndarray, L: np.ndarray, inside_obs: np.ndarray, obs=False):
     for i in range(1, Nx):
         for j in range(-1, Ny+1):
-            if not ((i > obs_i and i < obs_i+L) and (j > obs_j and j < obs_j+L)) or not obs:
+            for k in range(len(obs_i)):
+                inside_obs[k] = ((i > obs_i[k] and i < obs_i[k]+L[k]) and (j > obs_j[k] and j < obs_j[k]+L[k]))
+
+            if not inside_obs.any() or not obs:
                 u[i, j] = u_star[i, j] - dt*(pressure[i, j] - pressure[i-1, j])/dx
 
     return u
 
 @njit
-def calculate_new_v(v_star, pressure, Nx, Ny, dy, dt, v, obs_i=0, obs_j=0, L=1, obs=False):
+def calculate_new_v(v_star, pressure, Nx, Ny, dy, dt, v, obs_i: np.ndarray, obs_j: np.ndarray, L: np.ndarray, inside_obs: np.ndarray, obs=False):
     for i in range(-1, Nx+1):
         for j in range(1, Ny):
-            if not ((i > obs_i and i < obs_i+L) and (j > obs_j and j < obs_j+L)) or not obs:
+            for k in range(len(obs_i)):
+                inside_obs[k] = ((i > obs_i[k] and i < obs_i[k]+L[k]) and (j > obs_j[k] and j < obs_j[k]+L[k]))
+
+            if not inside_obs.any() or not obs:
                 v[i, j] = v_star[i, j] - dt*(pressure[i, j] - pressure[i, j-1])/dy
     
     return v
 
 @njit
-def calculate_psi(u, v, Nx, Ny, dx, dy, dt, tol, psi, obs_i=0, obs_j=0, L=1, obs=False):
+def calculate_psi(u, v, Nx, Ny, dx, dy, dt, tol, psi, obs_i: np.ndarray, obs_j: np.ndarray, L: np.ndarray, inside_obs: np.ndarray, obs=False):
     valor_lambda = -(2/dx**2 + 2/dy**2)
     error = 100
     iteracao = 0
@@ -303,7 +329,10 @@ def calculate_psi(u, v, Nx, Ny, dx, dy, dt, tol, psi, obs_i=0, obs_j=0, L=1, obs
         R_max = 0
         for i in range(1, Nx):
             for j in range(1, Ny):
-                if not ((i >= obs_i and i <= obs_i+L) and (j >= obs_j and j <= obs_j+L)) or not obs:
+                for k in range(len(obs_i)):
+                    inside_obs[k] = ((i >= obs_i[k] and i <= obs_i[k]+L[k]) and (j >= obs_j[k] and j <= obs_j[k]+L[k]))
+
+                if not inside_obs.any() or not obs:
                     R = (-(v[i, j] - v[i-1, j])/dx + (u[i, j] - u[i, j-1])/dy
                         -(psi[i+1, j] - 2*psi[i, j] + psi[i-1, j])/dx**2
                         -(psi[i, j+1] - 2*psi[i, j] + psi[i, j-1])/dy**2)
@@ -317,14 +346,14 @@ def calculate_psi(u, v, Nx, Ny, dx, dy, dt, tol, psi, obs_i=0, obs_j=0, L=1, obs
         error = R_max
         iteracao += 1
         if iteracao > 10**6:
-            print('[ERRO] Atingiu o limite de iterações')
+            print('[ERROR] - Maximum number of iterations reached.')
             break
     
     return psi
 
 def utils_compiler():
     """
-    Call all other functions one time to compile with Numba
+    Call all the other functions one time to compile with Numba
     """
     Re = 1
     tol = 1.e-2
@@ -346,33 +375,50 @@ def utils_compiler():
     pressure = np.zeros((Nx+2, Ny+2), float)
 
     psi = np.zeros((Nx+1, Ny+1), float)
+    w = np.zeros((Nx+1, Ny+1), float)
 
     U = np.zeros(Nx+1, float)
     U[:] = 1
     u[:, Ny] = 2*U[:]
 
-    calculate_u_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, u_star, U)
-    calculate_v_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, v_star)
-    calculate_u_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, u_star, U)
-    calculate_v_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, v_star)
-    calculate_pressure(u_star, v_star, Nx, Ny, dx, dy, dt, tol, pressure)
-    calculate_new_u(u_star, pressure, Nx, Ny, dx, dt, u)
-    calculate_new_v(v_star, pressure, Nx, Ny, dy, dt, v)
-    calculate_psi(u, v, Nx, Ny, dx, dy, dt, tol, psi)
+    obs_i = np.array([4])
+    obs_j = np.array([4])
+    L = np.array([2])
+    inside_obs = np.zeros(obs_i.shape, bool)
+    obs = False
 
-def calculate_voticity(u, v, dx, dy, Nx, Ny, w, obs_i=0, obs_j=0, L=1, obs=False):
+    calculate_u_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, u_star, U, obs_i, obs_j, L, inside_obs, obs)
+    calculate_v_star_imp(u, v, Nx, Ny, dx, dy, dt, Re, tol, v_star, obs_i, obs_j, L, inside_obs, obs)
+    calculate_u_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, u_star, U, obs_i, obs_j, L, inside_obs, obs)
+    calculate_v_star_exp(u, v, Nx, Ny, dx, dy, dt, Re, v_star, obs_i, obs_j, L, inside_obs, obs)
+    calculate_pressure(u_star, v_star, Nx, Ny, dx, dy, dt, tol, pressure, obs_i, obs_j, L, inside_obs, obs)
+    calculate_new_u(u_star, pressure, Nx, Ny, dx, dt, u, obs_i, obs_j, L, inside_obs, obs)
+    calculate_new_v(v_star, pressure, Nx, Ny, dy, dt, v, obs_i, obs_j, L, inside_obs, obs)
+    calculate_psi(u, v, Nx, Ny, dx, dy, dt, tol, psi, obs_i, obs_j, L, inside_obs, obs)
+    calculate_vorticity(u, v, dx, dy, Nx, Ny, w, obs_i, obs_j, L, inside_obs, obs)
 
+@njit
+def calculate_vorticity(u, v, dx, dy, Nx, Ny, w, obs_i: np.ndarray, obs_j: np.ndarray, L: np.ndarray, inside_obs: np.ndarray, obs=False):
     for i in range(1, Nx):
         for j in range(1, Ny):
-            if not ((i >= obs_i and i <= obs_i+L) and (j >= obs_j and j <= obs_j+L)) or not obs:
+            for k in range(len(obs_i)):
+                inside_obs[k] = ((i >= obs_i[k] and i <= obs_i[k]+L[k]) and (j >= obs_j[k] and j <= obs_j[k]+L[k]))
+
+            if not inside_obs.any() or not obs:
                 w[i, j] = (v[i+1, j] - v[i-1, j])/(2*dx) - (u[i, j+1] - u[i, j-1])/(2*dy)
 
     return w
 
-def get_obstacle_size(info):
-    aux = info.split("x")
-    i, j, L = int(aux[0]), int(aux[1]), int(aux[2])
-    return i, j, L
+def get_obstacle_size(info, num):
+    aux = info.split(",")
+    i, j, L = [], [], []
+    m = 0
+    for k in range(num):
+        i.append(int(aux[m]))
+        j.append(int(aux[m+1]))
+        L.append(int(aux[m+2]))
+        m += 3
+    return np.array(i), np.array(j), np.array(L)
 
 def check_diff(u_new, v_new, u_old, v_old, tol=1.e-6):
     error_u = np.max(abs(u_new - u_old))
