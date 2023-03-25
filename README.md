@@ -2,17 +2,20 @@
 
 ![](https://img.shields.io/badge/version-v0.2-blue)
 
+Simulate the flow of a newtonian fluid in a lid-drive cavity with explicit and implicit projection methods.
+
 ## Setup
 
-- Python version: 3.10
+- Python version: 3.10.7
 
-### Environment
+### Virtual environment
 
 1. To create, run
 
 ```bash
 python -m venv mnt_venv
 ```
+
 2. To activate, run
 
     - On Windows (git bash)
@@ -33,18 +36,53 @@ pip install -r requirements.txt
 
 ## How to use
 
+```bash
+(mnt-venv)$ python main.py -h
+usage: main.py [-h] -re NUM_RE --final_time FINAL_TIME [-i]
+               [--grid_size GRID_SIZE] [--dt DT] [--tol TOL] [-v]
+               [--num_obs NUM_OBS] [-obs OBSTACLE] [-o OUTPUT]
+               [--early_stopping] [--dont_save] [--dont_show]
+
+Simulate the flow of a newtonian fluid in a lid-drive cavity
+
+options:
+  -h, --help            show this help message and exit
+  -re NUM_RE, --num_re NUM_RE
+                        Reynolds number.
+  --final_time FINAL_TIME
+                        Final time to the simulation.
+  -i, --implicit        Set to use implicit method. (Default: False)
+  --grid_size GRID_SIZE
+                        Grid discretization. (Default: 100)
+  --dt DT               Time increment. (Default: 0.0001)
+  --tol TOL             Tolerance of the iteration error. (Default: 1.e-8)
+  -v, --validation      Set True to the validation problem. (Default: False)
+  --num_obs NUM_OBS     Number of obstacles. (Default: 1)
+  -obs OBSTACLE, --obstacle OBSTACLE
+                        Obstacle location (i, j) and size as 'i','j','L' to
+                        all obstacles. (Default: 0,0,0)
+  -o OUTPUT, --output OUTPUT
+                        Set the output name. (Default: None)
+  --early_stopping      Set early stop to True to simulate until permanent
+                        situation or final time. (Default: False)
+  --dont_save           Don't save output plots at the end of simulation.
+                        (Default: False)
+  --dont_show           Don't show output plots at the end of simulation.
+                        (Default: False)
+```
+
 ### Validation
 
 - Explicit method
 
 ```bash
-python main.py --re 100 --tf 60 --validation
+python main.py --num_re 100 --final_time 60 -v
 ```
 
 - Implicit method
 
 ```bash
-python main.py --re 100 --tf 60 --implicit --dt 0.001 --validation
+python main.py --num_re 100 --final_time 60 -i --dt 0.001 -v
 ```
 
 ### Flow for a square obstacle
@@ -52,19 +90,19 @@ python main.py --re 100 --tf 60 --implicit --dt 0.001 --validation
 - One centered obstacle
 
 ```bash
-python main.py --re 100 --tf 60 --implicit --dt 0.001 --obstacle 40,40,20
+python main.py --num_re 100 --final_time 60 -i --dt 0.001 -obs 40,40,20
 ```
 
 - One obstacle on arbitrary position
 
 ```bash
-python main.py --re 100 --tf 60 --implicit --dt 0.001 --obstacle 20,60,20
+python main.py --num_re 100 --final_time 60 -i --dt 0.001 -obs 20,60,20
 ```
 
 - Two obstacles on arbitrary position
 
 ```bash
-python main.py --re 100 --tf 60 --implicit --dt 0.001 --num_obs 2 --obstacle 20,60,20,60,20,20
+python main.py --num_re 100 --final_time 60 -i --dt 0.001 --num_obs 2 -obs 20,60,20,60,20,20
 ```
 
 ## Results
@@ -95,23 +133,23 @@ python main.py --re 100 --tf 60 --implicit --dt 0.001 --num_obs 2 --obstacle 20,
 
 #### Stream function contour plot
 
-|              **Re = 1**              |             **Re = 100**              |
-|:------------------------------------:|:-------------------------------------:|
-|   ![](images/implicit/Re_1_imp.png)  |  ![](images/implicit/Re_100_imp.png)  |
-|             **Re = 400**             |             **Re = 1000**             |
-|  ![](images/implicit/Re_400_imp.png) | ![](images/implicit/Re_1000_imp.png)  |
+|                  **Re = 1**                  |                 **Re = 100**                  |
+|:--------------------------------------------:|:---------------------------------------------:|
+|   ![](images/implicit/Re_1_imp_contour.jpg)  |  ![](images/implicit/Re_100_imp_contour.jpg)  |
+|                  **Re = 400**                |                 **Re = 1000**                 |
+|  ![](images/implicit/Re_400_imp_contour.jpg) | ![](images/implicit/Re_1000_imp_contour.jpg)  |
 
 #### Velocity *u* profile for x = 0.5
 
 |                  **Re = 100**                  |                   **Re = 1000**                 |
 |:----------------------------------------------:|:-----------------------------------------------:|
-| ![](images/implicit/Re_100_imp_u_velocity.png) | ![](images/implicit/Re_1000_imp_u_velocity.png) |
+| ![](images/implicit/Re_100_imp_u_velocity.jpg) | ![](images/implicit/Re_1000_imp_u_velocity.jpg) |
 
 #### Vorticity contour plot
 
 |                  **Re = 100**                 |                    **Re = 1000**               |
 |:---------------------------------------------:|:----------------------------------------------:|
-| ![](images/implicit/Re_100_imp_vorticity.png) | ![](images/implicit/Re_1000_imp_vorticity.png) |
+| ![](images/implicit/Re_100_imp_vorticity.jpg) | ![](images/implicit/Re_1000_imp_vorticity.jpg) |
 
 ### Flow for a square obstacle
 
