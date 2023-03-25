@@ -2,11 +2,12 @@
 
 ![](https://img.shields.io/badge/version-v0.2-blue)
 
-Simulate the flow of a newtonian fluid in a lid-drive cavity with explicit and implicit projection methods.
+Simulate the flow of a newtonian fluid in a lid-drive cavity with internals obstacles using the explicit and implicit projection methods.
 
 ## Setup
 
 - Python version: 3.10.7
+- Numba version: 0.56.4
 
 ### Virtual environment
 
@@ -43,7 +44,7 @@ usage: main.py [-h] -re NUM_RE --final_time FINAL_TIME [-i]
                [--num_obs NUM_OBS] [-obs OBSTACLE] [-o OUTPUT]
                [--early_stopping] [--dont_save] [--dont_show]
 
-Simulate the flow of a newtonian fluid in a lid-drive cavity
+Simulate the flow of a newtonian fluid in a lid-drive cavity with internals obstacles
 
 options:
   -h, --help            show this help message and exit
@@ -56,11 +57,11 @@ options:
                         Grid discretization. (Default: 100)
   --dt DT               Time increment. (Default: 0.0001)
   --tol TOL             Tolerance of the iteration error. (Default: 1.e-8)
-  -v, --validation      Set True to the validation problem. (Default: False)
+  -v, --validation      Set True for the validation problem. (Default: False)
   --num_obs NUM_OBS     Number of obstacles. (Default: 1)
   -obs OBSTACLE, --obstacle OBSTACLE
                         Obstacle location (i, j) and size as 'i','j','L' to
-                        all obstacles. (Default: 0,0,0)
+                        all obstacles. (Default: 40,40,20)
   -o OUTPUT, --output OUTPUT
                         Set the output name. (Default: None)
   --early_stopping      Set early stop to True to simulate until permanent
@@ -159,7 +160,7 @@ python main.py --num_re 100 --final_time 60 -i --dt 0.001 --num_obs 2 -obs 20,60
 |:----------------------------------------------:|:-----------------------------------------------:|
 |  ![](images/centered/Re_1_imp_obs_stream.jpg)  |  ![](images/centered/Re_100_imp_obs_stream.jpg) |
 |               **Re = 400,  L = 20**            |              **Re = 1000,  L = 20**             |
-| ![](images/centered/Re_400_imp_obs_stream.jpg) | ![](images/centered/Re_1000_imp_obs_stream.png) |
+| ![](images/centered/Re_400_imp_obs_stream.jpg) | ![](images/centered/Re_1000_imp_obs_stream.jpg) |
 
 #### One centered obstacle vorticity contour plot
 
