@@ -5,3 +5,6 @@ mnt_venv/
 *.pdf
 *.xlsx
 scheduler.*
+flow*.jpg
+*.svg
+cover2.jpg

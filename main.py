@@ -1,7 +1,7 @@
 """
 @Author: Matheus Teixeira de Sousa (mtsousa14@gmail.com)
 
-Simulate the flow of a newtonian fluid in a lid-drive cavity with internals obstacles.
+Simulate the flow of a newtonian fluid in a lid-drive cavity with internal obstacles
 """
 
 from utils.utils import *
@@ -14,7 +14,7 @@ import argparse
 
 if __name__ == '__main__':
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Simulate the flow of a newtonian fluid in a lid-drive cavity with internals obstacles')
+    parser = argparse.ArgumentParser(description='Simulate the flow of a newtonian fluid in a lid-drive cavity with internal obstacles')
     
     parser.add_argument('-re', '--num_re', required=True, type=int,
                         help="Reynolds number.")

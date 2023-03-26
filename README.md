@@ -1,8 +1,16 @@
+<!--
+Image by Freepik
+
+Link: https://www.freepik.com/free-photo/beautiful-smoke-color-textures_20288179.htm
+-->
+
+![](images/cover.jpg)
+
 # MNT-2021-1_Lid-Driven_Cavity
 
 ![](https://img.shields.io/badge/version-v0.2-blue)
 
-Simulate the flow of a newtonian fluid in a lid-drive cavity with internals obstacles using the explicit and implicit projection methods.
+Simulate the flow of a newtonian fluid in a lid-drive cavity with internal obstacles using the explicit and implicit projection methods.
 
 ## Setup
 
@@ -44,7 +52,7 @@ usage: main.py [-h] -re NUM_RE --final_time FINAL_TIME [-i]
                [--num_obs NUM_OBS] [-obs OBSTACLE] [-o OUTPUT]
                [--early_stopping] [--dont_save] [--dont_show]
 
-Simulate the flow of a newtonian fluid in a lid-drive cavity with internals obstacles
+Simulate the flow of a newtonian fluid in a lid-drive cavity with internal obstacles
 
 options:
   -h, --help            show this help message and exit
