@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser.add_argument('-re', '--num_re', required=True, type=int,
                         help="Reynolds number.")
     parser.add_argument('--final_time', required=True, type=float,
-                        help="Final time to the simulation.")
+                        help="Final time for the simulation.")
     parser.add_argument('-i', '--implicit', default=False, action='store_true',
                         help="Set to use implicit method. (Default: False)")
     parser.add_argument('--grid_size', default=100, type=int,
@@ -33,22 +33,22 @@ if __name__ == '__main__':
     parser.add_argument('--num_obs', default=1, type=int,
                         help="Number of obstacles. (Default: 1)")
     parser.add_argument('-obs', '--obstacle', default='40,40,20', type=str,
-                        help="Obstacle location (i, j) and size as 'i','j','L' to all obstacles. (Default: 40,40,20)")
+                        help="Obstacle location (i, j) and size as 'i','j','L' for all obstacles. (Default: 40,40,20)")
     parser.add_argument('-o', '--output', default=None,
                         help="Set the output name. (Default: None)")
     parser.add_argument('--early_stopping', default=False, action="store_true",
-                        help="Set early stop to True to simulate until permanent situation or final time. (Default: False)")
+                        help="Set True for the early stopping to simulate until the permanent situation or the final time. (Default: False)")
     parser.add_argument('--dont_save', default=False, action="store_true",
-                        help="Don't save output plots at the end of simulation. (Default: False)")
+                        help="Don't save output plots at the end of the simulation. (Default: False)")
     parser.add_argument('--dont_show', default=False, action="store_true",
-                        help="Don't show output plots at the end of simulation. (Default: False)")
+                        help="Don't show output plots at the end of the simulation. (Default: False)")
 
     args = parser.parse_args()
 
-    # Call functions to compile
+    # Call functions to 'compile' with Numba
     utils_compiler()
 
-    # Define Reynolds, tolerance, N, L, dx, dy and dt
+    # Define Reynolds number, tolerance, N, L, dx, dy and dt
     Re = args.num_re
     tol = args.tol
 
@@ -71,8 +71,9 @@ if __name__ == '__main__':
         print('[ERROR] - dx must be lower than Re^(-0.5) to avoid numerical instabilities.', flush=True)
         error = True
 
+    # Check for the obstacles information
     if args.validation:
-        obs_i, obs_j = np.asarray([0]), np.asarray([0])
+        obs_i, obs_j = np.asarray([0]), np.asarray([0]) # Must be 'asarray' to avoid problems with Numba
         inside_obs = np.zeros(obs_i.shape, bool)
         L = np.asarray([0])
         obs = False

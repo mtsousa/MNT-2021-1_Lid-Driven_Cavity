@@ -17,7 +17,7 @@ def plot_psi_stream(u_plot: np.ndarray, v_plot: np.ndarray, x: np.ndarray, y: np
 
     Params
         - u_plot, v_plot: String with obstacle information
-        - x, y: Vectors x and y of the axis
+        - x, y: Vectors x and y of the axes
         - Nx: Grid size on axis x
         - Lx, Ly: Cavity size
         - output_name: Output plot name
@@ -32,7 +32,7 @@ def plot_psi_stream(u_plot: np.ndarray, v_plot: np.ndarray, x: np.ndarray, y: np
                            constrained_layout=True,
                            sharex=True, sharey=True)
 
-    # Set the name of the axis
+    # Set the name of the axes
     ax.set_xlabel('x', fontsize=16)
     ax.set_ylabel('y', fontsize=16)
     
@@ -41,7 +41,7 @@ def plot_psi_stream(u_plot: np.ndarray, v_plot: np.ndarray, x: np.ndarray, y: np
     if obs:
         # For each obstacle, plot a black square
         for i, j, k in zip(obs_i, obs_j, L):
-            ax.add_patch(patches.Rectangle(xy=(i/Nx, j/Nx),  # Point of origin
+            ax.add_patch(patches.Rectangle(xy=(i/Nx, j/Nx), # Point of origin
                                            width=k/Nx, height=k/Nx, linewidth=1,
                                            color='black', fill=True, zorder=3.0))
     
@@ -67,7 +67,7 @@ def plot_psi_contour(psi: np.ndarray, Nx: int, x: np.ndarray, y: np.ndarray, Lx:
     Params
         - psi: Velocity field matrix
         - Nx: Grid size on axis x
-        - x, y: Vectors x and y of the axis
+        - x, y: Vectors x and y of the axes
         - Lx, Ly: Cavity size
         - output_name: Output plot name
         - obs_i: Position of the obstacle on axis x
@@ -100,7 +100,7 @@ def plot_psi_contour(psi: np.ndarray, Nx: int, x: np.ndarray, y: np.ndarray, Lx:
                            constrained_layout=True,
                            sharex=True, sharey=True)
     
-    # Set the name of the axis
+    # Set the name of the axes
     ax.set_xlabel('x', fontsize=16)
     ax.set_ylabel('y', fontsize=16)
     
@@ -109,7 +109,7 @@ def plot_psi_contour(psi: np.ndarray, Nx: int, x: np.ndarray, y: np.ndarray, Lx:
     if obs:
         # For each obstacle, plot a black square
         for i, j, k in zip(obs_i, obs_j, L):
-            ax.add_patch(patches.Rectangle(xy=(i/Nx, j/Nx),  # Point of origin
+            ax.add_patch(patches.Rectangle(xy=(i/Nx, j/Nx), # Point of origin
                                            width=k/Nx, height=k/Nx, linewidth=1,
                                            color='black', fill=True, zorder=3.0))
 
@@ -151,7 +151,7 @@ def plot_u_velocity(Re: int, Lx: float, y: np.ndarray, u_plot: np.ndarray):
                            constrained_layout=True,
                            sharex=True, sharey=True)
     
-    # Set the name of the axis
+    # Set the name of the axes
     ax.set_xlabel(r'Velocity $u$', fontsize=16)
     ax.set_ylabel('y', fontsize=16)
     
@@ -175,7 +175,7 @@ def plot_vorticity_contour(w: np.ndarray, Nx: int, x: np.ndarray, y: np.ndarray,
     Params
         - w: Vorticity matrix
         - Nx: Grid size on axis x
-        - x, y: Vectors x and y of the axis
+        - x, y: Vectors x and y of the axes
         - Lx, Ly: Cavity size
         - output_name: Output plot name
         - obs_i: Position of the obstacle on axis x
@@ -213,7 +213,7 @@ def plot_vorticity_contour(w: np.ndarray, Nx: int, x: np.ndarray, y: np.ndarray,
                            constrained_layout=True,
                            sharex=True, sharey=True)
     
-    # Set the name of the axis
+    # Set the name of the axes
     ax.set_xlabel('x', fontsize=16)
     ax.set_ylabel('y', fontsize=16)
     
@@ -222,7 +222,7 @@ def plot_vorticity_contour(w: np.ndarray, Nx: int, x: np.ndarray, y: np.ndarray,
     if obs:
         # For each obstacle, plot a black square
         for i, j, k in zip(obs_i, obs_j, L):
-            ax.add_patch(patches.Rectangle(xy=(i/Nx, j/Nx),  # Point of origin
+            ax.add_patch(patches.Rectangle(xy=(i/Nx, j/Nx), # Point of origin
                                            width=k/Nx, height=k/Nx, linewidth=1,
                                            color='black', fill=True, zorder=3.0))
     
@@ -247,12 +247,12 @@ def get_matrices_plot(u: np.ndarray, v: np.ndarray, Nx: int, Ny: int, Lx: float,
 
     Params
         - u, v: Matrices u and v
-        - Nx, Ny:
-        - Lx, Ly:
+        - Nx, Ny: Grid size on axes x and y
+        - Lx, Ly: Cavity size
 
     Returns
         - u_plot, v_plot: Matrix u and v to plot
-        - x, y: Vectors x and y of the axis
+        - x, y: Vectors x and y of the axes
     """
     u_plot = np.zeros((Nx+1, Ny+1), float)
     v_plot = np.zeros((Nx+1, Ny+1), float)

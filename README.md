@@ -59,7 +59,7 @@ options:
   -re NUM_RE, --num_re NUM_RE
                         Reynolds number.
   --final_time FINAL_TIME
-                        Final time to the simulation.
+                        Final time for the simulation.
   -i, --implicit        Set to use implicit method. (Default: False)
   --grid_size GRID_SIZE
                         Grid discretization. (Default: 100)
@@ -68,15 +68,16 @@ options:
   -v, --validation      Set True for the validation problem. (Default: False)
   --num_obs NUM_OBS     Number of obstacles. (Default: 1)
   -obs OBSTACLE, --obstacle OBSTACLE
-                        Obstacle location (i, j) and size as 'i','j','L' to
+                        Obstacle location (i, j) and size as 'i','j','L' for
                         all obstacles. (Default: 40,40,20)
   -o OUTPUT, --output OUTPUT
                         Set the output name. (Default: None)
-  --early_stopping      Set early stop to True to simulate until permanent
-                        situation or final time. (Default: False)
-  --dont_save           Don't save output plots at the end of simulation.
+  --early_stopping      Set True for the early stopping to simulate until the
+                        permanent situation or the final time. (Default:
+                        False)
+  --dont_save           Don't save output plots at the end of the simulation.
                         (Default: False)
-  --dont_show           Don't show output plots at the end of simulation.
+  --dont_show           Don't show output plots at the end of the simulation.
                         (Default: False)
 ```
 

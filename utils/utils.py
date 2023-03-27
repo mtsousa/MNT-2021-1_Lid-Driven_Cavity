@@ -17,7 +17,7 @@ def calculate_u_star_exp(u: np.ndarray, v: np.ndarray, Nx: int, Ny: int, dx: flo
 
     Params
         - u, v: Matrices u and v
-        - Nx, Ny: Grid size on axis x and y
+        - Nx, Ny: Grid size on axes x and y
         - dx, dy: Spatial increment
         - dt: Temporal increment
         - Re: Reynolds number
@@ -71,7 +71,7 @@ def calculate_u_star_imp(u: np.ndarray, v: np.ndarray, Nx: int, Ny: int, dx: flo
 
     Params
         - u, v: Matrices u and v
-        - Nx, Ny: Grid size on axis x and y
+        - Nx, Ny: Grid size on axes x and y
         - dx, dy: Spatial increment
         - dt: Temporal increment
         - Re: Reynolds number
@@ -148,7 +148,7 @@ def calculate_v_star_exp(u: np.ndarray, v: np.ndarray, Nx: int, Ny: int, dx: flo
 
     Params
         - u, v: Matrices u and v
-        - Nx, Ny: Grid size on axis x and y
+        - Nx, Ny: Grid size on axes x and y
         - dx, dy: Spatial increment
         - dt: Temporal increment
         - Re: Reynolds number
@@ -201,7 +201,7 @@ def calculate_v_star_imp(u: np.ndarray, v: np.ndarray, Nx: int, Ny: int, dx: flo
 
     Params
         - u, v: Matrices u and v
-        - Nx, Ny: Grid size on axis x and y
+        - Nx, Ny: Grid size on axes x and y
         - dx, dy: Spatial increment
         - dt: Temporal increment
         - Re: Reynolds number
@@ -277,7 +277,7 @@ def calculate_pressure(u_star: np.ndarray, v_star: np.ndarray, Nx: int, Ny: int,
 
     Params
         - u_star, v_star: Matrices u* and v*
-        - Nx, Ny: Grid size on axis x and y
+        - Nx, Ny: Grid size on axes x and y
         - dx, dy: Spatial increment
         - dt: Temporal increment
         - tol: Tolarece of the iteration error
@@ -408,7 +408,7 @@ def calculate_new_u(u_star: np.ndarray, pressure: np.ndarray, Nx: int, Ny: int, 
     Params
         - u_star: Matrix u*
         - pressure: Matrix pressure
-        - Nx, Ny: Grid size on axis x and y
+        - Nx, Ny: Grid size on axes x and y
         - dx: Spatial increment
         - dt: Temporal increment
         - u: Matrix u
@@ -442,7 +442,7 @@ def calculate_new_v(v_star: np.ndarray, pressure: np.ndarray, Nx: int, Ny: int, 
     Params
         - v_star: Matrix v*
         - pressure: Matrix pressure
-        - Nx, Ny: Grid size on axis x and y
+        - Nx, Ny: Grid size on axes x and y
         - dy: Spatial increment
         - dt: Temporal increment
         - v: Matrix v
@@ -475,7 +475,7 @@ def calculate_psi(u: np.ndarray, v: np.ndarray, Nx: int, Ny: int, dx: float, dy:
 
     Params
         - u, v: Matrices u and v
-        - Nx, Ny: Grid size on axis x and y
+        - Nx, Ny: Grid size on axes x and y
         - dx, dy: Spatial increment
         - tol: Tolarece of the iteration error
         - psi: Matrix psi
@@ -574,7 +574,7 @@ def calculate_vorticity(u: np.ndarray, v: np.ndarray, dx: float, dy: float, Nx: 
     Params
         - u, v: Matrices u and v
         - dx, dy: Spatial increment
-        - Nx, Ny: Grid size on axis x and y
+        - Nx, Ny: Grid size on axes x and y
         - w: Matrix w
         - obs_i: Position of the obstacle on axis x
         - obs_j: Position of the obstacle on axis y
